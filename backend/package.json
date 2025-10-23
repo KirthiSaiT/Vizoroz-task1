@@ -1,0 +1,14 @@
+{
+  "name": "crud-app-backend",
+  "version": "1.0.0",
+  "description": "Backend for CRUD application with FastAPI",
+  "main": "main.py",
+  "scripts": {
+    "dev": "uvicorn main:app --reload",
+    "start": "uvicorn main:app",
+    "init-db": "python init_db.py"
+  },
+  "keywords": ["fastapi", "python", "crud", "postgresql"],
+  "author": "Your Name",
+  "license": "MIT"
+}
