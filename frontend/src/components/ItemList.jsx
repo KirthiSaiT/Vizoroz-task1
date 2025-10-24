@@ -19,12 +19,15 @@ import {
   Typography,
   Box,
   IconButton,
+  Chip,
+  Tooltip,
+  CircularProgress,
 } from '@mui/material'
-import { Edit, Delete } from '@mui/icons-material'
+import { Edit, Delete, Refresh } from '@mui/icons-material'
 
 const ItemList = () => {
   const dispatch = useDispatch()
-  const { items } = useSelector((state) => state.items)
+  const { items, loading } = useSelector((state) => state.items)
   const [openEditDialog, setOpenEditDialog] = useState(false)
   const [editingItem, setEditingItem] = useState(null)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
@@ -55,42 +58,96 @@ const ItemList = () => {
     setEditingItem(null)
   }
 
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false)
+    setDeletingItemId(null)
+  }
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
+
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-        <Button variant="outlined" onClick={handleRefresh}>
-          Refresh
-        </Button>
-      </Box>
-      
       {items.length === 0 ? (
-        <Typography align="center" sx={{ my: 3 }}>
-          No items found. Add a new item to get started.
-        </Typography>
+        <Box sx={{ textAlign: 'center', py: 6 }}>
+          <Typography variant="h6" color="textSecondary" gutterBottom>
+            No menu items found
+          </Typography>
+          <Typography variant="body1" color="textSecondary">
+            Add a new item to get started
+          </Typography>
+        </Box>
       ) : (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell align="right">Actions</TableCell>
+              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                <TableCell><Typography variant="subtitle2" fontWeight="bold">ID</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight="bold">Name</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight="bold">Description</Typography></TableCell>
+                <TableCell><Typography variant="subtitle2" fontWeight="bold">Price</Typography></TableCell>
+                <TableCell align="right">
+                  <Button 
+                    variant="outlined" 
+                    size="small" 
+                    startIcon={<Refresh />}
+                    onClick={handleRefresh}
+                  >
+                    Refresh
+                  </Button>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.id}</TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell>${item.price}</TableCell>
+                <TableRow 
+                  key={item.id} 
+                  hover
+                  sx={{ 
+                    '&:last-child td, &:last-child th': { border: 0 },
+                    '&:hover': { backgroundColor: '#f9f9f9' }
+                  }}
+                >
+                  <TableCell component="th" scope="row">
+                    <Chip label={item.id} size="small" color="primary" variant="outlined" />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body1" fontWeight="medium">
+                      {item.name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title={item.description} placement="top-start">
+                      <Typography 
+                        variant="body2" 
+                        color="textSecondary" 
+                        sx={{ 
+                          maxWidth: 200, 
+                          overflow: 'hidden', 
+                          textOverflow: 'ellipsis', 
+                          whiteSpace: 'nowrap' 
+                        }}
+                      >
+                        {item.description}
+                      </Typography>
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body1" fontWeight="bold" color="primary">
+                      ${item.price.toFixed(2)}
+                    </Typography>
+                  </TableCell>
                   <TableCell align="right">
                     <IconButton 
                       color="primary" 
                       onClick={() => handleEdit(item)}
                       size="small"
+                      sx={{ mr: 1 }}
                     >
                       <Edit />
                     </IconButton>
@@ -119,19 +176,28 @@ const ItemList = () => {
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
+        onClose={handleCloseDeleteDialog}
+        maxWidth="xs"
+        fullWidth
       >
-        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogTitle>
+          <Typography variant="h6">Confirm Delete</Typography>
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this item? This action cannot be undone.
+            Are you sure you want to delete this menu item? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+          <Button onClick={handleCloseDeleteDialog} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDeleteConfirm} color="secondary" variant="contained">
+          <Button 
+            onClick={handleDeleteConfirm} 
+            color="secondary" 
+            variant="contained"
+            startIcon={<Delete />}
+          >
             Delete
           </Button>
         </DialogActions>
