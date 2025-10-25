@@ -1,84 +1,106 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchItems } from './features/itemsSlice'
-import ItemList from './components/ItemList'
-import ItemForm from './components/ItemForm'
-import { Container, Typography, Box, Paper, CssBaseline } from '@mui/material'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
+import React, { useState } from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { CssBaseline, Box, Container, Typography, Button, AppBar, Toolbar } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
+import InventoryManager from './components/InventoryManager';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#4CAF50', // Green for food theme
     },
     secondary: {
-      main: '#e57373',
+      main: '#FF9800', // Orange for accent
     },
     background: {
-      default: '#f5f5f5',
+      default: '#f5f7fa',
+      paper: '#ffffff',
+    },
+    success: {
+      main: '#4CAF50',
+    },
+    warning: {
+      main: '#FF9800',
+    },
+    info: {
+      main: '#2196F3',
     },
   },
   typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h1: {
+      fontWeight: 700,
+      color: '#2E7D32',
+    },
     h2: {
       fontWeight: 600,
       color: '#333',
     },
+    h3: {
+      fontWeight: 600,
+      color: '#2E7D32',
+    },
+    h4: {
+      fontWeight: 600,
+      color: '#333',
+    },
     h5: {
-      fontWeight: 500,
+      fontWeight: 600,
       color: '#444',
     },
+    h6: {
+      fontWeight: 600,
+    },
   },
-})
+  spacing: 8, // Base spacing unit
+  components: {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: 'none',
+          fontWeight: 600,
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+        },
+      },
+    },
+  },
+});
 
 function App() {
-  const dispatch = useDispatch()
-  const { loading, error } = useSelector((state) => state.items)
-
-  useEffect(() => {
-    dispatch(fetchItems())
-  }, [dispatch])
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography variant="h2" component="h1" gutterBottom>
-            Bon Appetit Cafe - Menu Manager
-          </Typography>
-          <Typography variant="h6" color="textSecondary">
-            Manage your cafe menu items efficiently
-          </Typography>
-        </Box>
+      <Box sx={{ minHeight: '100vh', bgcolor: '#f5f7fa' }}>
+        {/* Header */}
+        <AppBar position="static" sx={{ backgroundColor: '#2E7D32', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
+              Food Inventory Manager
+            </Typography>
+          </Toolbar>
+        </AppBar>
         
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
-          {/* Add Item Section */}
-          <Box sx={{ flex: 1 }}>
-            <Paper elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
-              <Typography variant="h5" component="h2" gutterBottom>
-                Add New Menu Item
-              </Typography>
-              <ItemForm />
-            </Paper>
-          </Box>
-          
-          {/* Items List Section */}
-          <Box sx={{ flex: 2 }}>
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h5" component="h2" gutterBottom>
-                  Menu Items
-                </Typography>
-                {loading && <Typography>Loading...</Typography>}
-                {error && <Typography color="error">Error: {error}</Typography>}
-              </Box>
-              <ItemList />
-            </Paper>
-          </Box>
-        </Box>
-      </Container>
+        {/* Main Content */}
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+          <InventoryManager />
+        </Container>
+      </Box>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

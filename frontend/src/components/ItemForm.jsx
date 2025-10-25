@@ -15,8 +15,34 @@ import {
   IconButton,
   Card,
   CardContent,
+  Avatar,
+  InputAdornment,
+  styled,
 } from '@mui/material'
-import { Close } from '@mui/icons-material'
+import { Close, Save, Fastfood, CurrencyRupee } from '@mui/icons-material'
+
+// Styled components for better appearance
+const StyledCard = styled(Card)(({ theme }) => ({
+  borderRadius: 16,
+  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+}))
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  borderRadius: 12,
+  padding: '12px 24px',
+  fontWeight: 600,
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+  '&:hover': {
+    boxShadow: '0 6px 16px rgba(0, 0, 0, 0.15)',
+  },
+}))
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  '& .MuiOutlinedInput-root': {
+    borderRadius: 12,
+  },
+}))
 
 const ItemForm = ({ item = null, open = false, onClose = null }) => {
   const dispatch = useDispatch()
@@ -70,98 +96,91 @@ const ItemForm = ({ item = null, open = false, onClose = null }) => {
   }
 
   const formContent = (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
-      <TextField
+    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+      <StyledTextField
         fullWidth
         label="Item Name"
         variant="outlined"
-        margin="normal"
         {...register('name', { required: 'Name is required' })}
         error={!!errors.name}
         helperText={errors.name?.message}
         placeholder="Enter item name"
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Fastfood color="primary" />
+            </InputAdornment>
+          ),
+        }}
+        size="medium"
       />
-      <TextField
+      <StyledTextField
         fullWidth
         label="Description"
         variant="outlined"
-        margin="normal"
         multiline
-        rows={3}
+        rows={4}
         {...register('description', { required: 'Description is required' })}
         error={!!errors.description}
         helperText={errors.description?.message}
         placeholder="Enter item description"
+        size="medium"
       />
-      <TextField
+      <StyledTextField
         fullWidth
-        label="Price ($)"
+        label="Price (INR)"
         type="number"
         variant="outlined"
-        margin="normal"
         {...register('price', { 
           required: 'Price is required',
           min: { value: 0, message: 'Price must be positive' }
         })}
         error={!!errors.price}
         helperText={errors.price?.message}
-        placeholder="Enter price"
+        placeholder="Enter price in Indian Rupees"
         InputProps={{
-          inputProps: { min: 0, step: 0.01 }
+          startAdornment: (
+            <InputAdornment position="start">
+              <CurrencyRupee color="primary" />
+            </InputAdornment>
+          ),
+          inputProps: { min: 0, step: 1 }
         }}
+        size="medium"
       />
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
         {isEditing && onClose && (
-          <Button 
+          <StyledButton 
             onClick={handleClose} 
             variant="outlined" 
             color="secondary"
             startIcon={<Close />}
           >
             Cancel
-          </Button>
+          </StyledButton>
         )}
-        <Button 
+        <StyledButton 
           type="submit" 
           variant="contained" 
           color="primary"
-          size="large"
+          startIcon={<Save />}
         >
           {isEditing ? 'Update Item' : 'Add Item'}
-        </Button>
+        </StyledButton>
       </Box>
     </Box>
   )
 
   if (isEditing && onClose) {
-    return (
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6">Edit Menu Item</Typography>
-            <IconButton onClick={handleClose}>
-              <Close />
-            </IconButton>
-          </Box>
-        </DialogTitle>
-        <DialogContent dividers>
-          <DialogContentText sx={{ mb: 2 }}>
-            Update the details for this menu item.
-          </DialogContentText>
-          {formContent}
-        </DialogContent>
-        <DialogActions>
-        </DialogActions>
-      </Dialog>
-    )
+    return formContent
   }
 
   return (
-    <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardContent>
+    <StyledCard variant="outlined">
+      <CardContent sx={{ p: 3 }}>
         {formContent}
       </CardContent>
-    </Card>
+    </StyledCard>
   )
 }
 
