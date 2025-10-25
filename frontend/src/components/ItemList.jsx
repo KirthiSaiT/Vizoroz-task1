@@ -167,11 +167,22 @@ const ItemList = () => {
       )}
 
       {/* Edit Dialog */}
-      <ItemForm 
-        item={editingItem} 
-        open={openEditDialog} 
-        onClose={handleCloseEditDialog} 
-      />
+      <Dialog
+        open={openEditDialog}
+        onClose={handleCloseEditDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent>
+          {editingItem && (
+            <ItemForm 
+              item={editingItem} 
+              open={openEditDialog} 
+              onClose={handleCloseEditDialog} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <Dialog
